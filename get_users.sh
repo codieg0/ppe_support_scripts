@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# To do:
-# Need to figure how to fiter by type of user
-# Reuse code
+# Created by Diego Castro
+# For the Proofpoint Essentials support team
 
 creds_domain() {
   read -rep "Username: " username
@@ -39,7 +38,7 @@ general_jq() {
 
 	users_endpoint | jq -r --arg user "$users_type" '["First Name", "Last Name", "Email Address", "Type"], 
    	(.users[] | select(.is_active == true and .type == $user) | 
-   	[.firstname, .surname, .primary_email, .type]) | @tsv' | column -t -s $'\t'
+   	[.firstname, .surname, .primary_email, .type]) | @csv' | column -t -s $'\t'
 }
 
 end_user() {
@@ -47,7 +46,7 @@ end_user() {
 	creds_domain
 	echo
 
-	general_jq "end_user"
+	general_jq "end_user" > end_users-${domain}.csv
 }
 
 silent_user() {
@@ -55,7 +54,7 @@ silent_user() {
 	creds_domain
 	echo
 
-	general_jq "silent_user"
+	general_jq "silent_user" > silent_users-${domain}.csv
 }
 
 org_admin() {
@@ -63,7 +62,7 @@ org_admin() {
 	creds_domain
 	echo
 
-	general_jq "organization_admin"
+	general_jq "organization_admin" > org_admins-${domain}.csv
 }
 
 channel_admin() {
@@ -71,7 +70,7 @@ channel_admin() {
 	creds_domain
 	echo
 
-	general_jq "channel_admin"
+	general_jq "channel_admin" > channel_admins-${domain}.csv
 }
 
 funct_acc() {
@@ -79,7 +78,7 @@ funct_acc() {
 	creds_domain
 	echo
 
-	general_jq "functional_account"
+	general_jq "functional_account" > funct_accounts-${domain}.csv
 }
 
 all() {
@@ -89,7 +88,7 @@ all() {
 	
 	users_endpoint | jq -r '["First Name", "Last Name", "Email Address", "Type"], 
    	(.users[] | select(.is_active == true) | 
-   	[.firstname, .surname, .primary_email, .type]) | @tsv' | column -t -s $'\t'
+   	[.firstname, .surname, .primary_email, .type]) | @csv' | column -t -s $'\t' > all-${domain}.csv
 }
 
 all_no_functs(){
@@ -99,7 +98,7 @@ all_no_functs(){
 	
 	users_endpoint | jq -r '["First Name", "Last Name", "Email Address", "Type"], 
    	(.users[] | select(.is_active == true and .type != "functional_account") | 
-   	[.firstname, .surname, .primary_email, .type]) | @tsv' | column -t -s $'\t'
+   	[.firstname, .surname, .primary_email, .type]) | @csv' | column -t -s $'\t' > all_no_functs-${domain}.csv
 }
 
 while true;do
