@@ -1,0 +1,33 @@
+#!/bin/bash
+# Done by Diego Castro for the PPE support team
+
+# Defining colors
+bold_red='\e[1;31m'
+bold_green='\e[1;32m'
+ul_red='\e[4;31m'
+endc='\e[0m'
+
+# Requires input log
+# Optional output filename
+if [[ $# -lt 1 || $# -gt 2 ]]; then
+    echo -e "Usage: $0 ${ul_red}<log_file>${endc} ${ul_red}[output_file]${endc}"
+    exit 1
+fi
+
+# Verifying the attachment exists
+if [[ ! -f "$1" ]]; then
+    echo -e "File not found: ${ul_red}$1${endc}"
+    exit 1
+fi
+
+output_file="$2"
+
+if [[ -z "$output_file" ]]; then
+    read -rep $'\e[1;32mOutput filename:\e[0m ' output_file
+fi
+
+# Removes internal information
+sed -E 's/(eu|us).+NOQUEUE:[[:space:]]//' "$1" >> "${output_file}.txt"
+
+# Prints name of the output filename
+echo -e "Sanitized logs: ${bold_green}${output_file}.txt${endc}"
