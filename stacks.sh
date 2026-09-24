@@ -39,7 +39,6 @@ box_width=92
  
 # Word-wraps $1 to width $2, printing one (plain, uncolored) line per output
 # line. Long unbroken "words" (e.g. a long SPF/DMARC string) are hard-wrapped
-<<<<<<< HEAD
 # since they can't be split on spaces. Any leading whitespace on $1 (e.g. the
 # "  " used to indent SPF/DMARC/MX values under their label) is preserved on
 # every wrapped line — otherwise splitting long values into words for
@@ -47,17 +46,11 @@ box_width=92
 # indented while a longer SPF record on the same box did not.
 wrap_text() {
     local text=$1 width=$2 indent=""
-=======
-# since they can't be split on spaces.
-wrap_text() {
-    local text=$1 width=$2
->>>>>>> b1ac0f531a0952926e27cc058cb1841c70d52814
  
     if [[ -z "$text" ]]; then
         printf '\n'
         return
     fi
-<<<<<<< HEAD
  
     if [[ $text =~ ^([[:space:]]+) ]]; then
         indent="${BASH_REMATCH[1]}"
@@ -68,54 +61,32 @@ wrap_text() {
  
     if (( ${#indent} + ${#text} <= width )); then
         printf '%s%s\n' "$indent" "$text"
-=======
-    if (( ${#text} <= width )); then
-        printf '%s\n' "$text"
->>>>>>> b1ac0f531a0952926e27cc058cb1841c70d52814
         return
     fi
  
     local -a words=($text)
     local current="" word candidate remaining
     for word in "${words[@]}"; do
-<<<<<<< HEAD
         if (( ${#word} > inner_width )); then
             [[ -n "$current" ]] && { printf '%s%s\n' "$indent" "$current"; current=""; }
             remaining=$word
             while (( ${#remaining} > inner_width )); do
                 printf '%s%s\n' "$indent" "${remaining:0:inner_width}"
                 remaining=${remaining:inner_width}
-=======
-        if (( ${#word} > width )); then
-            [[ -n "$current" ]] && { printf '%s\n' "$current"; current=""; }
-            remaining=$word
-            while (( ${#remaining} > width )); do
-                printf '%s\n' "${remaining:0:width}"
-                remaining=${remaining:width}
->>>>>>> b1ac0f531a0952926e27cc058cb1841c70d52814
             done
             current=$remaining
             continue
         fi
  
         candidate=$([[ -n "$current" ]] && echo "$current $word" || echo "$word")
-<<<<<<< HEAD
         if (( ${#candidate} > inner_width )) && [[ -n "$current" ]]; then
             printf '%s%s\n' "$indent" "$current"
-=======
-        if (( ${#candidate} > width )) && [[ -n "$current" ]]; then
-            printf '%s\n' "$current"
->>>>>>> b1ac0f531a0952926e27cc058cb1841c70d52814
             current=$word
         else
             current=$candidate
         fi
     done
-<<<<<<< HEAD
     [[ -n "$current" ]] && printf '%s%s\n' "$indent" "$current"
-=======
-    [[ -n "$current" ]] && printf '%s\n' "$current"
->>>>>>> b1ac0f531a0952926e27cc058cb1841c70d52814
 }
  
 box_top() {
@@ -199,7 +170,6 @@ dmarc_lookup() {
     dig "${dig_opts[@]}" +short @"${dns_server}" "_dmarc.${domain}" TXT 2>/dev/null | tr -d '"' | grep -i '^v=DMARC1' | head -n1
 }
  
-<<<<<<< HEAD
 # RDAP is the structured, HTTPS-based successor to WHOIS.
 #
 # This used to go through rdap.org, which is supposed to 302-redirect to the
@@ -275,19 +245,6 @@ age_lookup() {
         -H "Accept: application/rdap+json" \
         -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36" \
         "${base}/domain/${domain}" 2>/dev/null)
-=======
-# RDAP is the structured, HTTPS-based successor to WHOIS. rdap.org resolves
-# the right registry automatically for the TLD, so this works across TLDs
-# without per-registry WHOIS parsing.
-age_lookup() {
-    local domain=$1
-    local resp created=""
- 
-    # rdap.org 302-redirects to the actual registry's RDAP server, so -L is
-    # required or the response body comes back empty. -4 avoids the slow
-    # AAAA-then-A fallback some networks hit when IPv6 routing is broken.
-    resp=$(curl -4 -sL --connect-timeout 5 --max-time 8 "https://rdap.org/domain/${domain}" 2>/dev/null)
->>>>>>> b1ac0f531a0952926e27cc058cb1841c70d52814
     [[ -z "$resp" ]] && return
  
     if command -v jq >/dev/null 2>&1; then
@@ -528,7 +485,6 @@ domain_info() {
     # was searched), re-run the age lookup just for that one case — this is
     # the only path that adds extra wait time, and only when it actually
     # differs.
-<<<<<<< HEAD
     #
     # "primary_domain" from the API is often a hosted/tenant domain
     # (*.onmicrosoft.com, a webmail provider's domain, etc.) rather than a
@@ -550,12 +506,6 @@ domain_info() {
             rm -f "$new_age_file"
             age_domain=$domain
         fi
-=======
-    local age_domain
-    age_domain=$(head -n1 "$domainsfile" 2>/dev/null)
-    if [[ -n "$age_domain" && "${age_domain,,}" != "${domain,,}" ]]; then
-        age_lookup "$age_domain" > "$agefile" 2>/dev/null
->>>>>>> b1ac0f531a0952926e27cc058cb1841c70d52814
     else
         age_domain=$domain
     fi
