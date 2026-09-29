@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# By Diego Castro - started this to learn Bash - have some basics...
-# Improved by Claude
+# By Diego Castro - https://github.com/codieg0
 # For our PPE Support team
+# Started this to learn Bash. Improved the script using Claude
 # PPE Domain Search
 
 # Add your creds within the quotation marks
